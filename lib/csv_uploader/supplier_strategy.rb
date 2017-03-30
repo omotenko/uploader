@@ -1,7 +1,9 @@
 module CsvUploader
-  class SupplierStrategy
+  class SupplierStrategy < Strategy
 
-    def self.execute(file_path:)
+    protected
+
+    def create_tmp_table
       Supplier.connection.execute <<-SQL
         DROP TABLE IF EXISTS supplier_imports;
         CREATE TEMP TABLE supplier_imports
@@ -10,17 +12,13 @@ module CsvUploader
           name character varying
         )
       SQL
+    end
 
-      File.open(file_path, 'r') do |file|
-        Supplier.connection.raw_connection.copy_data %{copy supplier_imports from stdin with csv delimiter ','} do
-          while line = file.gets do
-            line = line.gsub('¦', ',')
+    def copy_file_to_tmp_table
+      super('supplier_imports')
+    end
 
-            Supplier.connection.raw_connection.put_copy_data(line)
-          end
-        end
-      end
-
+    def upsert
       Supplier.connection.execute <<-SQL
         insert into suppliers(code, name, created_at, updated_at)
         select code, name, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP

@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   resources :uploads
 
   resources :goods
+
+  root to: 'uploads#new'
 end

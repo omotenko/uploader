@@ -1,3 +1,7 @@
+<% if flash[:error].present? %>
+  <div class="error"><%= flash[:error] %></div>
+<% end %>
+
 <p><b>NOTE:</b></p>
 <ol>
   <li>Upload suppliers.csv</li>

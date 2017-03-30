@@ -5,13 +5,19 @@ class UploadsController < ApplicationController
   end
 
   def create
-    @upload = Upload.new(upload_params)
+    begin
+      @upload = Upload.new(upload_params)
+    rescue ActionController::ParameterMissing
+      flash[:error] = "Couldn't find attachment."
+      return redirect_to(new_upload_url)
+    end
+
     if @upload.save
       UploaderJob.perform_later(upload_id: @upload.id)
       return redirect_to(goods_url)
     else
-      errors = @upload.errors.messages
-      raise "Couldn't save file with errors #{errors}"
+      flash[:error] = "Couldn't save file."
+      return redirect_to(new_upload_url)
     end
   end
 
