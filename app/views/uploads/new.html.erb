@@ -1,0 +1,9 @@
+<p><b>NOTE:</b></p>
+<ol>
+  <li>Upload suppliers.csv</li>
+  <li>Upload sku.csv</li>
+</ol>
+<%= form_for @upload, url: uploads_path do |form| %>
+  <%= form.file_field :attachment %>
+  <%= form.submit 'Upload' %>
+<% end %>
